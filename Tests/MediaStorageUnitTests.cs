@@ -85,7 +85,42 @@ namespace Tests
             Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
 
+        [TestMethod]
+        public async Task ReplaceFileMedia_ReturnsOk()
+        {
+            // Arrange
+            var content = "Hello World from a Fake File";
+            var fileName = "test.txt";
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+            IFormFile formFile = new FormFile(stream, 0, stream.Length, "id_from_form", fileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = "text/plain"
+            };
+            var mockService = new Mock<IMediaStorageService>();
+            mockService.Setup(service => service.ReplaceFile(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("test");
 
+            var controller = new MediaStorageController(mockService.Object);
+            // Act
+            var result = await controller.ReplaceFileMedia("test.txt", formFile);
+            // Assert
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(result);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+
+        [TestMethod]
+        public async Task ReplaceFileMedia_ReturnsBadRequest()
+        {
+            // Arrange
+            var mockService = new Mock<IMediaStorageService>();
+            mockService.Setup(service => service.ReplaceFile(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("test");
+            var controller = new MediaStorageController(mockService.Object);
+            // Act
+            var result = await controller.ReplaceFileMedia("test.txt", It.IsAny<IFormFile>());
+            // Assert
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsNotNull(result);
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
 
         [TestMethod]
         public async Task DeleteFileMedia_ReturnsNoContent()

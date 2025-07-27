@@ -36,7 +36,7 @@ namespace Tests
             };
             var jwtSettings = new JwtSettings
             {
-                IssuerSigningKey = "your-128-bit-secret-key",
+                IssuerSigningKey = "your-128-bit-secret-key-your-128-bit-secret-key",
                 ValidIssuer = "test",
                 ValidAudience = "test"
             };
